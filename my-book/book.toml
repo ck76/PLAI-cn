@@ -1,0 +1,11 @@
+[book]
+title = "PLAI-cn Programming Languages: Application and Interpretation"
+authors = ["CHENG KUN"]
+language = "en"
+multilingual = false
+src = "src"
+[output.html]
+
+[output.latex]
+
+[output.pdf]

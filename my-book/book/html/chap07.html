@@ -1,0 +1,617 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Chapter 7 - PLAI-cn Programming Languages: Application and Interpretation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> index</a></li><li class="chapter-item expanded "><a href="chap01.html"><strong aria-hidden="true">2.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chap02.html"><strong aria-hidden="true">3.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chap03.html"><strong aria-hidden="true">4.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chap04.html"><strong aria-hidden="true">5.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chap05.html"><strong aria-hidden="true">6.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chap06.html"><strong aria-hidden="true">7.</strong> Chapter 6</a></li><li class="chapter-item expanded "><a href="chap07.html" class="active"><strong aria-hidden="true">8.</strong> Chapter 7</a></li><li class="chapter-item expanded "><a href="chap08.html"><strong aria-hidden="true">9.</strong> Chapter 8</a></li><li class="chapter-item expanded "><a href="chap09.html"><strong aria-hidden="true">10.</strong> Chapter 9</a></li><li class="chapter-item expanded "><a href="chap10.html"><strong aria-hidden="true">11.</strong> Chapter 10</a></li><li class="chapter-item expanded "><a href="chap11.html"><strong aria-hidden="true">12.</strong> Chapter 11</a></li><li class="chapter-item expanded "><a href="chap12.html"><strong aria-hidden="true">13.</strong> Chapter 12</a></li><li class="chapter-item expanded "><a href="chap13.html"><strong aria-hidden="true">14.</strong> Chapter 13</a></li><li class="chapter-item expanded "><a href="chap14.html"><strong aria-hidden="true">15.</strong> Chapter 14</a></li><li class="chapter-item expanded "><a href="chap15.html"><strong aria-hidden="true">16.</strong> Chapter 15</a></li><li class="chapter-item expanded "><a href="chap16.html"><strong aria-hidden="true">17.</strong> Chapter 16</a></li><li class="chapter-item expanded "><a href="chap17.html"><strong aria-hidden="true">18.</strong> Chapter 17</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">PLAI-cn Programming Languages: Application and Interpretation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="7-任意位置的函数"><a class="header" href="#7-任意位置的函数">7 任意位置的函数</a></h1>
+<p>Scheme 语言报告修订版报告的概述
+（<a href="http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-3.html#node_chap_Temp_3">r6rs 概述</a>，<a href="http://www.math.pku.edu.cn/teachers/qiuzy/progtech/scheme/r5rscn.pdf">r5rs（中文）</a>）
+中指出如下的设计原则：</p>
+<blockquote>
+<p>程序语言的设计不应该是特性的简单堆砌，而应消除使多余特性显得必要的弱点和缺陷。</p>
+</blockquote>
+<p>这是个无须争辩的设计原则。（当然有些缺陷是迫不得已的，但是此原则迫使我们去认真思
+考引入这些缺陷的必要性，而不是把它们当作理所当然的。）下面我们试着遵从该原则来引
+入函数。</p>
+<p>在<a href="./chap05.html">第五章</a>中我们引入函数时并没有特别指明函数定义所在的位置。可以说
+我们是按照理想化的 DrRacket 模型引入的函数，即将函数的定义和使用分离。下面我们使
+用 Scheme 的设计原则来重新思考一下这种设计的<strong>必要性</strong>。</p>
+<p>为什么函数的定义不可以也是一种表达式呢？我们现在实现的算术语言中有个尴尬的问题
+：“函数的定义表示的是什么值？”，在现有设计中没有很好的答案。对于真正的语言来说，
+计算结果当然不可能只有数，所以也没必要给我们的语言作出这种限制；跳出这个框框，便
+可以给出很好的回答：“函数值”。让我们试试如何实现它。</p>
+<p>将函数作为值，能用它做什么呢？显然，函数和数是不同类型的值，你不能对函数做加法运
+算。但是，有件它显然能做的事：传入参数调用它！因此我们应该允许函数值出现在函数调
+用那个位置。其行为，显然是调用该函数。因此，我们的语言中应该允许如下的表达式作为
+合法程序（这里使用方括号以方便阅读）：</p>
+<pre><code class="language-Racket">(+ 2 ([define (f x) (* x 3)] 4))
+</code></pre>
+<p>计算它得到<code>(+ 2 (* 4 3))</code>，也就是<code>14</code>。（注意到没？这里使用了替换计算模型。）</p>
+<h2 id="71-函数作为表达式和值"><a class="header" href="#71-函数作为表达式和值">7.1 函数作为表达式和值</a></h2>
+<p>首先在我们的核心语言中添加函数定义：</p>
+<pre><code class="language-Racket">&lt;expr-type&gt; ::=    ; 表达式类型
+
+    (define-type ExprC
+      [numC (n : number)]
+      [idC (s : symbol)]
+      &lt;app-type&gt;   ; 调用类型
+      [plusC (l : ExprC) (r : ExprC)]
+      [multC (l : ExprC) (r : ExprC)]
+      &lt;fun-type&gt;)  ; 函数类型
+</code></pre>
+<p>现在，我们简单把函数定义复制到表达式语言中，以后需要的话还可以修改这一点。这样做
+我们现在可以复用已有的测试案例。</p>
+<pre><code class="language-Racket">&lt;fun-type-take-1&gt; ::=  ; 函数类型，第一次尝试
+
+    [fdC (name : symbol) (arg : symbol) (body : ExprC)]
+</code></pre>
+<p>接下来确定函数调用是什么样的。函数的位置应该放什么呢？我们希望它可以是函数定义，
+而不是像之前那样只能是定义好的函数的名字。由于现在函数定义类型和其它表达式类型混
+在了一起，这里让函数的位置可以放任意表达式吧，但是需要记住我们其实只希望它为函数
+定义：</p>
+<pre><code class="language-Racket">&lt;app-type&gt; ::=  ; 调用类型
+
+    [appC (fun : ExprC) (arg : ExprC)]
+</code></pre>
+<blockquote>
+<p>另一种可以考虑的做法是，把函数定义和其他类型的表达式区分开。也就是定义不同类型
+的表达式。我们在后文学习类型时会考虑这种做法。</p>
+</blockquote>
+<p>有了这个定义后，我们不再需要通过名字查找函数了，所以我们的解释器也可以不用再传入
+函数定义链表。当然之后有需要我们还可以将预定义函数链表加回来，现在我们只探究<strong>即
+时函数</strong>——在函数调用处定义的函数。</p>
+<p>接下来修改解释器<code>interp</code>。需要添加子句来处理函数定义，该部分代码大致会是这样：</p>
+<pre><code class="language-Racket">  [fdC (n a b) expr]
+</code></pre>
+<p><strong>思考题</strong></p>
+<blockquote>
+<p>解释器中添加了该语句会导致什么？</p>
+</blockquote>
+<p>显然，这是爆炸性的改变：解释器不再总是返回数了，于是出现类型错误。</p>
+<p>在之前解释器实现过程中，也不时的需要注意其返回值类型，但并没专门给其定义数据类型
+。现在是时候需要这么做了：</p>
+<pre><code class="language-Racket">&lt;answer-type-take-1&gt; ::=  ; 返回值类型，第一次尝试
+
+    (define-type Value
+      [numV (n : number)]
+      [funV (name : symbol) (arg : symbol) (body : ExprC)])
+</code></pre>
+<p>我们使用后缀<code>V</code>表示值（value），即求值的结果。<code>funV</code>部分正对应<code>fdC</code>；<code>fdC</code>为输入
+，<code>funV</code>为输出。通过区分这两者类型，我们可以分别修正它们两个。</p>
+<p>下面我们尝试使用该输出类型重写解释器，从类型开始：</p>
+<pre><code class="language-Racket">&lt;interp-hof&gt; ::=  ; 解释器，高阶函数
+
+    (define (interp [expr : ExprC] [env : Env]) : Value
+      (type-case ExprC expr
+        &lt;interp-body-hof&gt;))  ; 解释器主体，高阶函数
+</code></pre>
+<p>这就要求我们同样修改<code>Binding</code>和辅助函数<code>lookup</code>的类型。</p>
+<p><strong>练习</strong></p>
+<blockquote>
+<p>修改<code>Binding</code>和辅助函数<code>lookup</code>。</p>
+</blockquote>
+<pre><code class="language-Racket">&lt;interp-body-hof&gt; ::=  ; 解释器主体，高阶函数
+
+    [numC (n) (numV n)]
+    [idC (n) (lookup n env)]
+    &lt;app-case&gt;        ; 调用子句
+    &lt;plus/mult-case&gt;  ; 加法/乘法子句
+    &lt;fun-case&gt;  ; 函数子句
+</code></pre>
+<p>对于数，显然要使用新的返回值类型构造器对其包裹一下。对于标识符，一切不变。对于加
+法／乘法，需要进行简单的修改使其能正确的返回<code>Value</code>类型而不是简单的数：</p>
+<pre><code class="language-Racket">&lt;plus/mult-case&gt; ::=  ; 加法/乘法子句
+
+    [plusC (l r) (num+ (interp l env) (interp r env))]
+    [multC (l r) (num* (interp l env) (interp r env))]
+</code></pre>
+<p>辅助函数<code>num+</code>和<code>num*</code>我们以其中一个为例：</p>
+<pre><code class="language-Racket">(define (num+ [l : Value] [r : Value]) : Value
+  (cond
+    [(and (numV? l) (numV? r))
+     (numV (+ (numV-n l) (numV-n r)))]
+    [else
+     (error 'num+ "one argument was not a number")]))  ; 有参数不是数
+</code></pre>
+<p>请留意，在实际做加法前，我们检查了参数的类型确定其为数。后面会有章节继续谈论类型
+这个主题。</p>
+<p>还有两段代码要完成。先是函数定义。上面说过，函数值就是其类型的数据：</p>
+<pre><code class="language-Racket">&lt;fun-case-take-1&gt; ::=  ; 函数子句，第一次尝试
+
+    [fdC (n a b) (funV n a b)]
+</code></pre>
+<p>最后剩下函数调用的代码。尽管我们不再需要从函数定义链表中查询函数定义，但是这里还
+是尽量保留之前函数调用的代码的结构：</p>
+<pre><code class="language-Racket">&lt;app-case-take-1&gt; ::=  ; 调用子句，第一次尝试
+
+    [appC (f a) (let ([fd f])
+                  (interp (fdC-body fd)
+                          (extend-env (bind (fdC-arg fd)
+                                            (interp a env))
+                                      mt-env)))]
+</code></pre>
+<p>在原来是 lookup 查找的地方，我们直接引用了<code>f</code>作为函数定义。注意由于在函数应该出
+现的位置事实上可能出现任何表达式，我们最好编码检测它是否实是函数。</p>
+<p><strong>思考题</strong></p>
+<blockquote>
+<p>这里“是”是什么意思呢？我们是要检查它是作为语法结构上的函数（即<code>fdC</code>构造），还
+是只是检查该表达式的计算结果是否是函数值（即<code>funV</code>）呢？这两种做法有什么区别？
+换一种说法，你能不能找出具体的例子来展示其区别？</p>
+</blockquote>
+<p>我们面临选择：</p>
+<ol>
+<li>检查它在语法上是否是<code>fdC</code>构造，如果不是，抛出异常。</li>
+<li>对其进行求值，然后检查其返回<strong>值</strong>是否是函数，如果不是，抛出异常。</li>
+</ol>
+<p>我们选择后一种做法，它会使得我们的语言更为灵活。即使我们人类不一定需要这么做，但
+对于程序来说，第二种选择可以处理更多情况，比如程序生成代码。并且我们也会用到这个
+功能，就在<a href="#75-%E5%8C%BF%E5%90%8D%E4%B9%8B%E4%B8%8A%E7%9A%84%E8%AF%AD%E6%B3%95%E7%B3%96">匿名之上的语法糖</a>的讨论中。于是，修改函数调用部
+分代码得到：</p>
+<pre><code class="language-Racket">&lt;app-case-take-2&gt; ::=  ; 调用子句，第二次尝试
+
+    [appC (f a) (let ([fd (interp f env)])
+                  (interp (funV-body fd)
+                          (extend-env (bind (funV-arg fd)
+                                            (interp a env))
+                                      mt-env)))]
+</code></pre>
+<p><strong>练习</strong></p>
+<blockquote>
+<p>修改代码实现两种不同方式的类型检查。</p>
+</blockquote>
+<p>信不信由你，到此为止，一个可运行的解释器又完成了。最后我们照旧给出两个测试案例：</p>
+<pre><code class="language-Racket">(test (interp (plusC (numC 10) (appC (fdC 'const5 '_ (numC 5)) (numC 10)))
+              mt-env)
+      (numV 15))
+
+(test/exn (interp (appC (fdC 'f1 'x (appC (fdC 'f2 'y (plusC (idC 'x) (idC 'y)))
+                                          (numC 4)))
+                        (numC 3))
+                  mt-env)
+          "name not found")
+</code></pre>
+<h2 id="72-什么嵌套"><a class="header" href="#72-什么嵌套">7.2 什么？嵌套？</a></h2>
+<p>函数定义的函数体部分可以是任意表达式。而函数定义本身也是表达式。于是函数定义中可
+以包含···函数定义。例如：</p>
+<pre><code class="language-Racket">&lt;nested-fdC&gt; ::=  ; 嵌套的 fdC
+
+    (fdC 'f1 'x
+         (fdC 'f2 'x
+              (plusC (idC 'x) (idC 'x))))
+</code></pre>
+<p>对它求值还不是特别有意思：</p>
+<pre><code class="language-Racket">(funV 'f1 'x (fdC 'f2 'x (plusC (idC 'x) (idC 'x))))
+</code></pre>
+<p>当时如果我们调用上面的函数：</p>
+<pre><code class="language-Racket">&lt;applied-nested-fdC&gt; ::=  ; 调用嵌套的 fdC
+
+    (appC &lt;nested-fdC&gt;
+          (numC 4))
+</code></pre>
+<p>再求值，结果就有点意思了：</p>
+<pre><code class="language-Racket">(funV 'f2 'x (plusC (idC 'x) (idC 'x)))
+</code></pre>
+<p>这个结果就好像外部函数的调用对内部的函数没有任何影响一样。那么，为什么应该是这样
+的呢？外部函数引入的参数被内部函数引入的<strong>同名</strong>参数覆盖（mask）了，因此遵从静态
+作用域（必须的）的规则，内部的参数应该覆盖外部参数。但是，我们看看下面这个程序：</p>
+<pre><code class="language-Racket">(appC (fdC 'f1 'x
+           (fdC 'f2 'y
+                (plusC (idC 'x) (idC 'y))))
+      (numC 4))
+</code></pre>
+<p>求值得到：</p>
+<pre><code class="language-Racket">(funV 'f2 'y (plusC (idC 'x) (idC 'y)))
+</code></pre>
+<p>嗯，有点意思。</p>
+<p><strong>思考题</strong></p>
+<blockquote>
+<p>想想有意思的点在哪？</p>
+</blockquote>
+<p>为了看看到底有意思在哪，我们调用一下该函数：</p>
+<pre><code class="language-Racket">(appC (appC (fdC 'f1 'x
+                 (fdC 'f2 'y
+                      (plusC (idC 'x) (idC 'y))))
+            (numC 4))
+      (numC 5))
+</code></pre>
+<p>它将抛出异常告诉我们没找到标识符<code>x</code>绑定的值！</p>
+<p>但是，它不是应该通过函数<code>f1</code>的调用被绑定吗？清晰起见，我们切换为（假定的）Racket
+语法：</p>
+<pre><code class="language-Racket">((define (f1 x)
+   ((define (f2 y)
+      (+ x y))
+    4))
+ 5)
+</code></pre>
+<p>在调用外层函数时，x 应该被替换成 5，结果是：</p>
+<pre><code class="language-Racket">((define (f2 y)
+   (+ 5 y))
+ 4)
+</code></pre>
+<p>继续调用、替换得到<code>(+ 5 4)</code>也就是<code>9</code>，并没有出错。</p>
+<p>换一种说法，我们肯定是某个地方做错了以至于没有捕捉到函数调用时的参数替换。【注释
+】函数值需要<strong>记住调用过程中执行的替换操作</strong>。由于我们使用环境来表示这种替换，因
+此函数值需要包含记录了该替换的环境。这样得到的数据结构称为<strong>闭包（closure）</strong>：</p>
+<blockquote>
+<p>另一方面，如果我们使用替换模型，<code>x</code>会被替换成<code>(numV 4)</code>，函数体就变
+成<code>(plusC (numV 5) (idC ’y))</code>，而它并没有合适的类型。换一种说法，替换模型假设
+返回值的类型是合法语法。其实尊崇该假设也能学习很多高级编程概念，只是我们不打算
+往这个方向继续讨论。</p>
+</blockquote>
+<p>注意一下，在解释器的<code>appC</code>子句中用到了<code>funV-arg</code>和<code>funV-body</code>，但是没用
+到<code>funV-name</code>。想一下我们之前为什么需要名字这种东西？因为需要通过名字找到函数。
+但是这里我们通过解释器找到函数，函数名只是作为描述性的存在罢了。换一种说法，函数
+并不需要名字，就跟常数一样：我们每次使用 3 的时候并不需要给它命名，那么对于函数
+为什么要呢？函数<strong>本质上</strong>是匿名的，我们也应该将其定义和命名分开来。</p>
+<p>（但是你可能会说，这种论点只在函数直接定义并使用的情况才成立。如果我们想在某个地
+方定义，然后在其它地方使用它，我们不还是需要名字的么？是的，正是，后面
+的<a href="#75-%E5%8C%BF%E5%90%8D%E4%B9%8B%E4%B8%8A%E7%9A%84%E8%AF%AD%E6%B3%95%E7%B3%96">匿名之上的语法糖</a>中会说到这个主题）</p>
+<h2 id="73-实现闭包"><a class="header" href="#73-实现闭包">7.3 实现闭包</a></h2>
+<p>首先将函数值类型改为闭包结构体，而不仅仅是函数本体：</p>
+<pre><code class="language-Racket">&lt;answer-type&gt; ::=  ; 返回值类型
+
+    (define-type Value
+      [numV (n : number)]
+      [closV (arg : symbol) (body : ExprC) (env : Env)])
+</code></pre>
+<p>同时，我们可以修改函数类型，去除没用的函数名部分。由于历史原因，该构造被称
+为<strong>lambda</strong>：</p>
+<pre><code class="language-Racket">&lt;fun-type&gt; ::=     ; 函数类型
+
+    [lamC (arg : symbol) (body : ExprC)]
+</code></pre>
+<p>现在，当解释器遇到函数时，需要记录下到目前为止进行过的所有替换：【注释】</p>
+<pre><code class="language-Racket">&lt;fun-case&gt; ::=     ; 函数子句
+
+    [lamC (a b) (closV a b env)]
+</code></pre>
+<blockquote>
+<p>“Save the environment! Create a closure today!” —Cormac Flanagan</p>
+</blockquote>
+<p>然后在调用函数时，需要使用这个保存下来的环境，而不是空白环境。</p>
+<pre><code class="language-Racket">&lt;app-case&gt; ::=     ; 调用子句
+
+    [appC (f a) (let ([f-value (interp f env)])
+                  (interp (closV-body f-value)
+                          (extend-env (bind (closV-arg f-value)
+                                            (interp a env))
+                                      (closV-env f-value))))]
+</code></pre>
+<p>事实上这段代码还可以有另一个选择：使用函数调用处的环境：</p>
+<pre><code class="language-Racket">[appC (f a) (local ([define f-value (interp f env)])
+              (interp (closV-body f-value)
+                      (extend-env (bind (closV-arg f-value)
+                                        (interp a env))
+                                  env)))]
+</code></pre>
+<p><strong>思考题</strong></p>
+<blockquote>
+<p>如果我们使用动态的环境（即函数调用处的环境），会导致什么？</p>
+</blockquote>
+<p>回过头来看，现在可以理解为何我们在解释函数体时使用空白环境了。如果函数是定义在程
+序顶层的，那么它就没有“包含”任何的标识符。因此我们之前的函数实现是现在这种的特殊
+情况。</p>
+<h2 id="74-再次聊聊替换"><a class="header" href="#74-再次聊聊替换">7.4 再次聊聊替换</a></h2>
+<p>我们已经看到，通过替换这种非常符合直觉的方式可以帮助理解如何实现<code>lambda</code>函数。然
+而，对于替换本身我们需要小心一些陷阱！考虑下面这个函数（这里使用 Racket 语法）：</p>
+<pre><code class="language-Racket">(lambda (f)
+  (lambda (x)
+    (f 10)))
+</code></pre>
+<p>假设<code>f</code>被替换为 lambda 表达式<code>(lambda (y) (+ x y))</code>。注意这里有个自由变量<code>x</code>，所
+以如果它被求值，我们应该会得到未绑定变量错误。但是使用替换模型，我们将得到：</p>
+<pre><code class="language-Racket">(lambda (x)
+  ((lambda (y) (+ x y)) 10))
+</code></pre>
+<p>自由变量消失了！</p>
+<p>这是由于我们的替换操作实现的太过简单。为了避免这种异常情况（这也是动态绑定的一种
+形式），我们需要实现<strong>非捕获型的替换（capture-free substitution）</strong>。大致来说它
+是这样工作的：我们<strong>总是</strong>将绑定标识符<strong>重命名</strong>为从未用过的（<strong>新鲜的
+，fresh</strong>）名字。比如说，我们给每个标识符加个数字后缀来保证不会出现重名：</p>
+<pre><code class="language-Racket">(lambda (f1)
+  (lambda (x1)
+    (f1 10)))
+</code></pre>
+<p>（请注意，我们把 f 的绑定和被绑定出现都替换成了 f1。）接下来对被替换的表达式也进
+行同样的重命名：</p>
+<pre><code class="language-Racket">(lambda (y1) (+ x y1))
+</code></pre>
+<p>于是替换<code>f1</code>得到：【注释】</p>
+<pre><code class="language-Racket">(lambda (x1)
+  ((lambda (y1) (+ x y1)) 10))
+</code></pre>
+<blockquote>
+<p>这里为什么不对作为<code>x</code>进行重命名呢？因为它可能是引用全局的定义，要么我们也对全
+局定义进行同样的重命名。这就是所谓的一致性重命名原则。对这个例子来说，这没啥区
+别。</p>
+</blockquote>
+<p>现在，<code>x</code>仍然是自由变量！这才是正确的替换方式。</p>
+<p>等一等。怎么使用环境模型解释器处理这个例子，后果是啥？</p>
+<p><strong>思考题</strong></p>
+<blockquote>
+<p>试一下。</p>
+</blockquote>
+<p>试了你就知道，一切正确：程序报告有未绑定变量。环境模型实际上实现了非捕获型替换。</p>
+<p><strong>练习</strong></p>
+<blockquote>
+<p>使用环境是怎么避免替换中的捕获问题的？</p>
+</blockquote>
+<h2 id="75-匿名之上的语法糖"><a class="header" href="#75-匿名之上的语法糖">7.5 匿名之上的语法糖</a></h2>
+<p>让我们回过头考虑函数命名问题，对于实际编程来说它有明显的价值。注意我们现在<strong>已
+经</strong>有命名东西的方法：通过函数的调用，参数的值和参数名构成了局部绑定关系。在函数
+体中，我们只需要用形参就可以引用实参了。</p>
+<p>所以说，我们可以用函数来给一系列函数定义命名。例如，考虑 Racket 代码：</p>
+<pre><code class="language-Racket">(define (double x) (+ x x))
+(double 10)
+</code></pre>
+<p>等价于：</p>
+<pre><code class="language-Racket">(define double (lambda (x) (+ x x)))
+(double 10)
+</code></pre>
+<p>一种方法是直接内联（inline）double 的定义。不过为了保留命名过程，我们让其等价于
+：</p>
+<pre><code class="language-Racket">((lambda (double)
+   (double 10))
+ (lambda (x) (+ x x)))
+</code></pre>
+<p>这种模式——我们暂且称为“left-left-lambda”——实际上是种局部命名方式。它非常有用，以
+至于 Racket 为它提供了专门的语法：</p>
+<pre><code class="language-Racket">(let ([double (lambda (x) (+ x x))])
+  (double 10))
+</code></pre>
+<p><code>let</code>可以通过定义成上面那种语法糖来实现。</p>
+<p>下面是个稍微复杂点的例子：</p>
+<pre><code class="language-Racket">(define (double x) (+ x x))
+(define (quadruple x) (double (double x)))
+(quadruple 10)
+</code></pre>
+<p>这可以被改写成：</p>
+<pre><code class="language-Racket">(let ([double (lambda (x) (+ x x))])
+  (let ([quadruple (lambda (x) (double (double x)))])
+    (quadruple 10)))
+</code></pre>
+<p>一切正常。改变一下顺序就不行了：</p>
+<pre><code class="language-Racket">(let ([quadruple (lambda (x) (double (double x)))])
+  (let ([double (lambda (x) (+ x x))])
+    (quadruple 10)))
+</code></pre>
+<p>这是由于<code>quadruple</code>中“看不见”<code>double</code>。这里我们也能看到全局绑定和局部绑定的区别
+：位于顶层的全局绑定有“无限的作用域”。这是其强大的地方也是问题的来源。</p>
+<p>下面还有个更为微妙的问题，和递归有关。考虑如下的简单无限循环程序：</p>
+<pre><code class="language-Racket">(define (loop-forever x) (loop-forever x))
+(loop-forever 10)
+</code></pre>
+<p>转换成<code>let</code>：</p>
+<pre><code class="language-Racket">(let ([loop-forever (lambda (x) (loop-forever x))])
+  (loop-forever 10))
+</code></pre>
+<p>看上去好像没毛病，是吧？重写成<code>lambda</code>的形式：</p>
+<pre><code class="language-Racket">((lambda (loop-forever)
+   (loop-forever 10))
+ (lambda (x) (loop-forever x)))
+</code></pre>
+<p>显然，最后一行中的<code>loop-forever</code>没有被绑定！</p>
+<p>对于全局绑定这个问题就不存在。该怎么理解呢？这需要我们理解递归的含义。很快我们将
+揭开这层神秘的面纱。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="chap06.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="chap08.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="chap06.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="chap08.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

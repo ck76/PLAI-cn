@@ -1,0 +1,419 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Chapter 9 - PLAI-cn Programming Languages: Application and Interpretation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> index</a></li><li class="chapter-item expanded "><a href="chap01.html"><strong aria-hidden="true">2.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chap02.html"><strong aria-hidden="true">3.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chap03.html"><strong aria-hidden="true">4.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chap04.html"><strong aria-hidden="true">5.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chap05.html"><strong aria-hidden="true">6.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chap06.html"><strong aria-hidden="true">7.</strong> Chapter 6</a></li><li class="chapter-item expanded "><a href="chap07.html"><strong aria-hidden="true">8.</strong> Chapter 7</a></li><li class="chapter-item expanded "><a href="chap08.html"><strong aria-hidden="true">9.</strong> Chapter 8</a></li><li class="chapter-item expanded "><a href="chap09.html" class="active"><strong aria-hidden="true">10.</strong> Chapter 9</a></li><li class="chapter-item expanded "><a href="chap10.html"><strong aria-hidden="true">11.</strong> Chapter 10</a></li><li class="chapter-item expanded "><a href="chap11.html"><strong aria-hidden="true">12.</strong> Chapter 11</a></li><li class="chapter-item expanded "><a href="chap12.html"><strong aria-hidden="true">13.</strong> Chapter 12</a></li><li class="chapter-item expanded "><a href="chap13.html"><strong aria-hidden="true">14.</strong> Chapter 13</a></li><li class="chapter-item expanded "><a href="chap14.html"><strong aria-hidden="true">15.</strong> Chapter 14</a></li><li class="chapter-item expanded "><a href="chap15.html"><strong aria-hidden="true">16.</strong> Chapter 15</a></li><li class="chapter-item expanded "><a href="chap16.html"><strong aria-hidden="true">17.</strong> Chapter 16</a></li><li class="chapter-item expanded "><a href="chap17.html"><strong aria-hidden="true">18.</strong> Chapter 17</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">PLAI-cn Programming Languages: Application and Interpretation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="9-递归和循环子程序与数据"><a class="header" href="#9-递归和循环子程序与数据">9 递归和循环：子程序与数据</a></h1>
+<p><strong>递归</strong>指的是自我引用的行为。编程语言中存在（至少）两种形式的递归：数据的递归和
+控制的递归（程序行为，也就是函数的递归）。</p>
+<h2 id="91-递归与循环数据"><a class="header" href="#91-递归与循环数据">9.1 递归与循环数据</a></h2>
+<p>数据中的递归还可以分两种情况：引用与自身相同<strong>类型</strong>的事物，或者就是直接引用<strong>自
+身</strong>。</p>
+<p>第一种情况即我们传统称为<strong>递归数据</strong>。例如，树是一种递归数据结构：任一节点可以有
+若干子节点；每个子节点自身也是树。不过，如果编写程序遍历树，无需记录哪些节点已经
+被访问。树是有穷的数据结构。</p>
+<p>与之对应的是图这种<strong>循环</strong>（cyclic）数据：节点引用其他节点，可能最终通过引用链引
+用回自身。（当然，节点还可以直接引用自身。）遍历图的时候，如果不记录已访问过的节
+点，计算过程就可能<strong>发散</strong>，即不会终止。图的算法需要记住已访问过的节点，从而避免
+重复遍历。</p>
+<p>给我们的语言添加递归的数据结构，如链表或树，比较简单直接。主要需要实现两点：</p>
+<ol>
+<li>创建复合结构（compound structure）的能力（例如节点可以引用子树）；</li>
+<li>结束递归的能力（如树结构的叶节点）</li>
+</ol>
+<p><strong>练习</strong></p>
+<blockquote>
+<p>给语言添加内建数据类型：链表、二叉树</p>
+</blockquote>
+<p>添加循环数据更为微妙。考虑循环数据的最简单形式，指向自身的单元格：</p>
+<center><img src="./imgs/pict.png" /></center>
+<p>试试在 Racket 中定义它。尝试：</p>
+<pre><code class="language-Racket">(let ([b b])
+  b)
+</code></pre>
+<p>但这行不通：let 中右边那个<code>b</code>未绑定。把语法糖解开可以看的更清楚：</p>
+<pre><code class="language-Racket">((lambda (b)
+   b)
+  b)
+</code></pre>
+<p>为了清楚起见，我们可以重命名函数中的<code>b</code>：</p>
+<pre><code class="language-Racket">((lambda (x)
+  x)
+ b)
+</code></pre>
+<p>明显<code>b</code>未绑定。</p>
+<p>不使用额外的 Racket 构造的情况下【注释】，显然我们无法直接创建循环数据。我们需要
+给数据创建“地址”，然后在该地址中引用自己。注意这里是用了“然后”，它暗示时间的概念
+，即我们需要使用赋值操作。这样的话，我们可以试试用<code>box</code>来实现。</p>
+<blockquote>
+<p>指<code>shared</code>构造，不过其他语言基本上都没有这个机制，所以这里我们也不深究它了。我
+们这里学习的东西正是<code>shared</code>幕后实现的基本原理。</p>
+</blockquote>
+<p>计划如下：首先，创建 box 并将其绑定到某个标识符，设为<code>b</code>；然后改变 box 中的值，
+我们希望其中存什么呢？当然是对自身的引用。怎么获得该引用呢？通过名字<code>b</code>。通过这
+种方式，我们创建了环状数据：</p>
+<pre><code class="language-Racket">(let ([b (box 'dummy)])
+  (begin
+    (set-box! b b)
+    b))
+</code></pre>
+<p>注意，上面的程序在 Typed PLAI 中<strong>无法</strong>运行，后面会谈到如何给该程序添加类型。现
+在，要运行上面的程序，请使用动态类型的（<code>#lang plai</code>）语言。</p>
+<p>运行上面的程序，Racket 显示<code>#0=’#&amp;#0#</code>。这个表达式正是我们想要的。回想一下，前面
+提到过<code>#&amp;</code>是 Racket 中 box 的显示方式。<code>#0=</code>（其中 0 换成其他数也是一样）是
+Racket 中对于循环数据的命名方式。因此，上面结果字面意思就是“<code>#0</code>被绑定到了一个
+box，其内容为<code>#0#</code>，即绑定到<code>#0</code>的东西，即它自己”。</p>
+<p><strong>练习</strong></p>
+<blockquote>
+<p>在你自己的解释器中运行与这段代码，确保其产生<strong>循环的</strong>数据值。怎么检测这一点呢
+？</p>
+</blockquote>
+<p>上述思想可以用于其它数据类型。通过这种方式，我们能够创建循环的链表、图等等。核心
+思想就是分两步做：先命名一个空的占位符；然后修改占位符中的内容为其自身；要获取“
+自身”，使用第一步中绑定的名字即可。当然，不限于“自循环”：我们也可以创建相互循环
+的数据（没有某个元素是循环的，但它们的组合是循环的）。</p>
+<h2 id="92-递归函数"><a class="header" href="#92-递归函数">9.2 递归函数</a></h2>
+<p>澄清一下名词，递归函数不是引用与自身相同<strong>类型</strong>的函数，而是引用<strong>自身</strong>的函数。
+首先我们的语言需要已经添加了条件分支的特性（比如说前面<a href="./chap05.html">第五章</a>中，
+添加了条件指令判断是否是 0），这样我们才能写出有意思的程序。</p>
+<p>首先，用递归实现阶乘函数：</p>
+<pre><code class="language-Racket">(let ([fact (lambda (n)
+              (if0 n
+                   1
+                   (* n (fact (- n 1)))))])
+  (fact 10))
+</code></pre>
+<p>这根本行不通！它将报错内层的<code>fact</code>未绑定，和前面循环数据的例子相同。</p>
+<p>出现这种错误我们并不感到奇怪。毕竟到目前为止，我们实现的绑定机制并不会自动使函数
+定义支持循环（事实上，在一些早期的编程语言中，函数也不自动支持循环：递归被当作特
+殊的<strong>特性</strong>）。想要递归的话——即某个函数定义可以循环的引用自己——我们必须手工实现
+这点。</p>
+<blockquote>
+<p>如果按惯例在<strong>顶层</strong>定义函数，你就不会遇到问题。顶层的绑定意味着它要么是变量，
+要么是 box。所以下面说的模式基本上自动就帮你完成了。这也是为什么当你需要局部循
+环引用的时候，必须使用<code>letrec</code>或者<code>local</code>，而不是<code>let</code>的原因。</p>
+</blockquote>
+<p>那么解决手段也很明了：问题和上一个类似，方案就也用一样的。还是三步走：先创建占位
+符，然后在需要循环引用的地方使用该占位符，最后在使用之前要对占位符赋值：</p>
+<pre><code class="language-Racket">(let ([fact (box 'dummy)])
+  (let ([fact-fun
+         (lambda (n)
+           (if (zero? n)
+               1
+               (* n ((unbox fact) (- n 1)))))])
+    (begin
+      (set-box! fact fact-fun)
+      ((unbox fact) 10))))
+</code></pre>
+<p>事实上，我们并不需要<code>fact-fun</code>：这样写只是为了清晰起见。注意到<code>fact-fun</code>不是递归
+的，而且可以认为它是标识符而不是变量，所以我们可以直接使用它的值：</p>
+<pre><code class="language-Racket">(let ([fact (box 'dummy)])
+  (begin
+    (set-box! fact
+              (lambda (n)
+                (if (zero? n)
+                    1
+                    (* n ((unbox fact) (- n 1))))))
+    ((unbox fact) 10)))
+</code></pre>
+<p>这里有点小瑕疵，我们使用<code>fact</code>的时候总得<code>unbox</code>。如果语言中有变量，这么实现看起
+来更完美：</p>
+<pre><code class="language-Racket">(let ([fact 'dummy])
+    (begin
+      (set! fact
+            (lambda (n)
+              (if (zero? n)
+                  1
+                  (* n (fact (- n 1))))))
+      (fact 10)))
+</code></pre>
+<blockquote>
+<p>事实上，变量的一个用途就是简化上述模式的去语法糖过程，不再需要每次使用循环绑定
+的标识符时都得 unbox。另一方面，通过一些额外的努力，去语法糖过程也可以把 unbox
+带掉。</p>
+</blockquote>
+<h2 id="93-草率的观察"><a class="header" href="#93-草率的观察">9.3 草率的观察</a></h2>
+<p>到这里我们发现一个遵从同样时间顺序的模式：创建、更新、使用。我们可以将这个过程裹
+在语法糖中。考虑实现下面的语法：</p>
+<pre><code class="language-Racket">(rec name value body)
+</code></pre>
+<p>举个例子：</p>
+<pre><code class="language-Racket">(rec fact
+     (lambda (n) (if (= n 0) 1 (* n (fact (- n 1)))))
+     (fact 10))
+</code></pre>
+<p>它将计算得到 10 的阶乘。该语法糖解开会得到：</p>
+<pre><code class="language-Racket">(let ([name (box 'dummy)])
+  (begin
+    (set-box! name value)
+     body))
+</code></pre>
+<p>这里，我们假设<code>value</code>和<code>body</code>中所有对<code>name</code>的引用都被改写为<code>(unbox name)</code>；或者
+换种方法，我们也可以使用变量：</p>
+<pre><code class="language-Racket">(let ([name 'dummy])
+  (begin
+    (set! name value)
+    body))
+</code></pre>
+<p>这自然就导致一个问题：如果我们搞砸了顺序呢？最有意思的是，如果我们在更新<code>name</code>到
+实际值之前使用它呢？那么我们将看到初始化时系统给该结构的无意义值，也就是原始形式
+的占位符。</p>
+<p>最简单可以描述此问题的例子是：</p>
+<pre><code class="language-Racket">(letrec ([x x])
+  x)
+</code></pre>
+<p>或者等价的：</p>
+<pre><code class="language-Racket">(local ([define x x])
+  x)
+</code></pre>
+<p>在大多数 Racket 变体中，这会泄露占位符的初始值——这个值并没打算给大家使用。麻烦的
+地方是，这又是个合法的值，这意味着它至少可以被用于一些计算中。然而，如果无意中访
+问和使用它，那么后续的计算就是瞎扯。</p>
+<p>这个问题通常有三种解决方案：</p>
+<ol>
+<li>确保该值足够模糊，以至于无法在有意义的上下文中使用该值。这意味着像<code>0</code>这种值就
+不能用，事实上语言中绝大多数数据类型都不该用。取而代之，语言应该创建一种新类
+型的值专作此用。将该值传入其它任何操作都将导致错误的抛出。</li>
+<li>对于任意一处标识符的使用，明确地检查其值是否是这个特殊的“过早”值。虽然这在技
+术上是可行的，但它会对程序造成了巨大的性能损失。因此，通常只有教学语言这么做
+。</li>
+<li>只允许递归构造用于绑定函数中，而且要求该绑定的右项必须<strong>在语法上</strong>是函数。不
+幸的是，这个解决方案过于激进，比如说它不允许了我们写出图这样的结构。</li>
+</ol>
+<h2 id="94-不用到显式的状态"><a class="header" href="#94-不用到显式的状态">9.4 不用到显式的状态</a></h2>
+<p>聪明的你可能想到，还有一种方法可以定义递归函数（递归数据也是一样），而无需用到显
+式的赋值操作。</p>
+<p><strong>思考题</strong></p>
+<blockquote>
+<p>你应该已经明白，当我们使用<code>let</code>来定义递归函数时出了什么问题。请再试试。提示：
+需要更多的替换。不够再加，加满！</p>
+</blockquote>
+<p>仅使用函数（字面意思上）获得递归是个了不起的想法。Daniel P. Friedman 和 Matthias
+Felleisen 在《The Little Schemer》一书中很好的描述了其做法。你可以读一下
+其<a href="http://www.ccs.neu.edu/home/matthias/BTLS/sample.pdf">在线样章</a>。</p>
+<p><strong>练习</strong></p>
+<blockquote>
+<p>这个方案中用到了状态吗？有没有间接的用到呢？</p>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="chap08.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="chap10.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="chap08.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="chap10.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

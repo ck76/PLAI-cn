@@ -1,0 +1,340 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Chapter 4 - PLAI-cn Programming Languages: Application and Interpretation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> index</a></li><li class="chapter-item expanded "><a href="chap01.html"><strong aria-hidden="true">2.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chap02.html"><strong aria-hidden="true">3.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chap03.html"><strong aria-hidden="true">4.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chap04.html" class="active"><strong aria-hidden="true">5.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chap05.html"><strong aria-hidden="true">6.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chap06.html"><strong aria-hidden="true">7.</strong> Chapter 6</a></li><li class="chapter-item expanded "><a href="chap07.html"><strong aria-hidden="true">8.</strong> Chapter 7</a></li><li class="chapter-item expanded "><a href="chap08.html"><strong aria-hidden="true">9.</strong> Chapter 8</a></li><li class="chapter-item expanded "><a href="chap09.html"><strong aria-hidden="true">10.</strong> Chapter 9</a></li><li class="chapter-item expanded "><a href="chap10.html"><strong aria-hidden="true">11.</strong> Chapter 10</a></li><li class="chapter-item expanded "><a href="chap11.html"><strong aria-hidden="true">12.</strong> Chapter 11</a></li><li class="chapter-item expanded "><a href="chap12.html"><strong aria-hidden="true">13.</strong> Chapter 12</a></li><li class="chapter-item expanded "><a href="chap13.html"><strong aria-hidden="true">14.</strong> Chapter 13</a></li><li class="chapter-item expanded "><a href="chap14.html"><strong aria-hidden="true">15.</strong> Chapter 14</a></li><li class="chapter-item expanded "><a href="chap15.html"><strong aria-hidden="true">16.</strong> Chapter 15</a></li><li class="chapter-item expanded "><a href="chap16.html"><strong aria-hidden="true">17.</strong> Chapter 16</a></li><li class="chapter-item expanded "><a href="chap17.html"><strong aria-hidden="true">18.</strong> Chapter 17</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">PLAI-cn Programming Languages: Application and Interpretation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="4-初试去语法糖"><a class="header" href="#4-初试去语法糖">4 初试去语法糖</a></h1>
+<p>我们从非常斯巴达式的算术语言开始。下一步我们来看看，在现有语言框架下怎么支持更多
+算术操作。我们只加 2 种，以做示范。</p>
+<h2 id="41-扩展添加双目减法操作"><a class="header" href="#41-扩展添加双目减法操作">4.1 扩展：添加双目减法操作</a></h2>
+<p>首先，我们来添加减法。由于我们的语言已经包含了数、加法和乘法，用这些操作足以定义
+减法了：</p>
+<pre><code class="language-text">a - b = a + -1 × b
+</code></pre>
+<p>好的，这很简单！但是我们要怎样将它变成可运行的代码呢。首先，我们面临一个决定，将
+减法操作符放在哪？将其像其它两个操作符一样处理，在现有的 ArithC 数据类型中添加一
+条规则？这种想法看上去很自然，也很诱人。</p>
+<p><strong>思考题</strong></p>
+<blockquote>
+<p>修改 ArithC 这种做法有什么不好的地方呢？</p>
+</blockquote>
+<p>这会导致几个问题。首先，显然地，我们将需要修改所有处理 ArithC 的代码。就目前而言
+，还很简单，只涉及到了我们的解释器。但是如果在更为复杂的语言实现中，这会是个问题
+。其次，要添加的结构是可以用已实现的语法结构定义的，去修改已有数据结构的方式让人
+觉得代码不够模块化。最后一点，也是最微妙的一点，修改 ArithC 这种行为有<strong>概念上
+的</strong>错误。因为 ArithC 描述的是我们语言的核心部分。而减法（和其他类似添加特性）是
+用户交互的部分，属于表层语言。明智的做法是，将不同类型的概念放到不同的数据类型中
+，而不是把它们硬塞到一起。有时候这么做看上去有点笨拙，不过长远来看，它会让我们的
+程序更易于阅读易于维护。此外，你可能会将不同的功能扩展放在不同的层次上，这么做（
+将核心语法和表层语法区分开）正有利于这么做。</p>
+<p>因此，我们尝试定义新的数据类型来反应我们的表层语言语法结构：</p>
+<pre><code class="language-racket">(define-type ArithS  ; 表层算术
+  [numS (n : number)]
+  [plusS (l : ArithS) (r : ArithS)]
+  [bminusS (l : ArithS) (r : ArithS)]
+  [multS (l : ArithS) (r : ArithS)])
+</code></pre>
+<p>它看起来和 ArithC 基本相同，遵从了相似的递归结构，唯一的区别就是加了一个子句。</p>
+<p>数据类型定了，接下来需要做两件事。第一是要修改语法解析器，让其返回 ArithS 类型数
+据（而不是 ArithC 类型）。第二是要实现去语法糖（desugar）函数，它需要能
+把<code>ArithS</code>值转换成<code>ArithC</code>值。</p>
+<p>先来实现去语法糖函数简单的部分：</p>
+<pre><code class="language-racket">&lt;desugar&gt; ::=  ; 去语法糖
+
+    (define (desugar [as : ArithS]) : ArithC
+      (type-case ArithS as
+        [numS (n) (numC n)]
+        [plusS (l r) (plusC (desugar l)
+                            (desugar r))]
+        [multS (l r) (multC (desugar l)
+                            (desugar r))]
+        &lt;bminusS-case&gt;))  ; 二元减法子句
+</code></pre>
+<p>把数学描述转化为代码：</p>
+<pre><code class="language-racket">&lt;bminusS-case&gt; ::=  ; 二元减法子句
+
+    [bminusS (l r) (plusC (desugar l)
+                          (multC (numC -1) (desugar r)))]
+</code></pre>
+<p><strong>思考题</strong></p>
+<blockquote>
+<p>️ 常见错误是忘了递归地对<code>l</code>和<code>r</code>进行 desugar 操作。忘了会发生什么？请自行尝试
+。</p>
+</blockquote>
+<h2 id="42-扩展取负数操作"><a class="header" href="#42-扩展取负数操作">4.2 扩展：取负数操作</a></h2>
+<p>让我们来考虑另一种更有意思的扩展，取负数操作（unary negation）。这使得你需要对语
+法解析器进行一定修整，当读到<code>-</code>符号时，需要往前读以判断它是减法还是取负操作。但
+这不是有意思的部分！</p>
+<p>取负数操作可以有几种去语法糖的方法。很自然的我们会想到：</p>
+<pre><code class="language-text">-b = 0 - b
+</code></pre>
+<p>继续完成减法的去语法糖操作，我们得到：</p>
+<pre><code class="language-text">-b = 0 + -1 × b
+</code></pre>
+<p><strong>思考题</strong></p>
+<blockquote>
+<p>你觉得这两种中哪个更好呢？为什么？</p>
+</blockquote>
+<p>大家可能希望使用第一种方式，因为它看起来更为简单。假设我们扩展了<code>ArithS</code>数据类型
+，添加取负数的表示法：</p>
+<pre><code class="language-racket">[uminusS (e : ArithS)]  ; 一元减法表达式
+</code></pre>
+<p>对应去语法糖的实现也很直接：</p>
+<pre><code class="language-racket">[(uminusS (e) (desugar (bminusS (numS 0) e)))]
+</code></pre>
+<p>检查看看有没有类型错误。<code>e</code>是<code>ArithS</code>类型，所以它可以被当作参数传递给<code>bminusS</code>来
+进行去语法糖操作。所以这里要做的<strong>不是</strong>对 e 去语法糖，而是将其直接嵌入到生成的
+表达式中。在去语法糖的工具中，这种直接将某个输入项嵌入到另一个项中，然后递归调用
+去语法糖函数的做法很常见，被称之为<strong>宏（macro）</strong>。（在我们这个例子中，“宏”
+是<code>umiunsS</code>的定义。）</p>
+<p>然而该定义存在两个问题：</p>
+<p>1.　第一个问题是，该递归是<strong>生成的（generative）</strong>，这需要我们得对其进行特别关注
+。【注释】我们可能会希望使用下面这种方式来重写它：</p>
+<pre><code class="language-racket">[uminusS (e) (bminusS (numS 0) (desugar e))]
+</code></pre>
+<p>它确实消除了生成性（generativity）。</p>
+<blockquote>
+<p>如果你没听过生成递归，可以阅
+读<a href="http://www.ccs.neu.edu/home/matthias/HtDP2e/part_five.html">《程序设计方法》（又译《如何设计程序》）一书第五部分</a>。
+简单来说在生成递归中，子问题是输入的计算结果，而不是输入的子成分。我们这个例子
+还是很简单的，这里的“计算”就是<code>bminusS</code>构造函数。</p>
+</blockquote>
+<p><strong>思考题</strong></p>
+<blockquote>
+<p>很不幸的是，上面的转换有问题，试着找出问题吧。找不出的话，运行一下试试。</p>
+</blockquote>
+<p>第二个问题是，它依赖于<code>bminusS</code>的意义；如果<code>bminusS</code>的意义发生变化，<code>uminusS</code>的
+意义也就发生了变化，即使我们并没打算改变<code>uminusS</code>的意义。作为对比，另一种更鲁棒
+的做法是，定义函数，其输入是两个项，输出是第一个项加上<code>-1</code>乘以第二个项的表示法，
+然后用该函数来定义<code>uminusS</code>和<code>bminusS</code>。</p>
+<p>你可能会说，减法的意义不可能发生改变，这么做有啥意义呢？事情并不总是这样的。确实
+减法的<strong>意义</strong>不太可能改变；但是另一方面，它的<strong>实现</strong>可能会改变。例如，开发者决
+定为减法操作打印日志。采用前一种做法（宏展开），所有取负数操作就也会打出日志；而
+采用后一种做法就不会。</p>
+<p>很幸运，这个例子我们还有更简单的选择：</p>
+<pre><code class="language-text">-b = -1 × b
+</code></pre>
+<p>这种展开方式完全可行，而且还是结构递归。我们花这些篇幅讨论各种不同展开方式的原因
+是，告诉你各种选择和其带来的问题，毕竟现实中你不会总是那么幸运。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="chap03.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="chap05.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="chap03.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="chap05.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
